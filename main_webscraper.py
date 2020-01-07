@@ -136,7 +136,7 @@ class CWebCrawler(object):
                 if table_elem.hasAttr("data-odig"):
                     if table_elem.hasAttr("data-o"):
                         if isinstance(table_elem.getAttr("data-o"), (str, int)):
-                            if table_elem.getAttr("data-o") != "":
+                            if table_elem.getAttr("data-o") != "" and "np" not in table_elem.getClassName():
                                 if float(table_elem.getAttr("data-odig")) > best_odds[tnum]:
                                     best_odds[tnum] = float(table_elem.getAttr("data-odig"))
                                     best_odds_ind[tnum] = tchild

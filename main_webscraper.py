@@ -115,7 +115,7 @@ class CWebCrawler(object):
     # public methods
     # ------------------------------------------------------------------
 
-    def _check_website(self, website, confirm=False):
+    def _check_website(self, website, supress=False):
         """
         Checks one website for arb opps.
         """
@@ -165,43 +165,48 @@ class CWebCrawler(object):
                             odds.denominator) + "."
                         instructions.append(msg)
 
-                    if confirm == False:
-                        self._processResult({
-                            "Name": website.getName(),
-                            "Arbitrage Opportunity": str(round(float(arb_opp), 2)),
-                            "Link": website.getURL(),
-                            "Instructions": instructions
-                        })
+                    self._processResult({
+                        "Name": website.getName(),
+                        "Arbitrage Opportunity": str(round(float(arb_opp), 2)),
+                        "Link": website.getURL(),
+                        "Instructions": instructions},
+                        supress=supress
+                    )
                     return True
         return False
 
-    def _processResult(self, result):
+    def _processResult(self, result, supress=False):
         """
         Is run when a result is found.
         """
         self.all_results.append(result)
         self._check_results()
         name = result["Name"].split(":")
-        message.logResult("#------------------------------------------------------------------")
-        message.logResult("ARBITRAGE OPPORTUNITY OF " + result["Arbitrage Opportunity"] + " FOUND!")
-        message.logResult("GAME: " + name[0])
-        message.logResult("MARKET: " + name[1])
-        message.logResult("LINK: " + result["Link"])
-        message.logResult("#------------------------------------------------------------------")
-        for r in result["Instructions"]:
-            message.logResult(r)
-        message.logResult("#------------------------------------------------------------------")
+        if not supress:
+            message.logResult("#------------------------------------------------------------------")
+            message.logResult("ARBITRAGE OPPORTUNITY OF " + result["Arbitrage Opportunity"] + " FOUND!")
+            message.logResult("GAME: " + name[0])
+            message.logResult("MARKET: " + name[1])
+            message.logResult("LINK: " + result["Link"])
+            message.logResult("#------------------------------------------------------------------")
+            for r in result["Instructions"]:
+                message.logResult(r)
+            message.logResult("#------------------------------------------------------------------")
         html = make_html(self.all_results)
 
         with open("results.html", "w") as file:
             file.write(html)
 
         # then beep
-        ut.beep()
+        if not supress:
+            ut.beep()
 
 
     def _check_results(self):
-        self.all_results = [r for r in self.all_results if self._check_website(r["Link"], True)]
+        links = [r["Link"] for r in self.all_results]
+        self.all_results = []
+        for l in links:
+            self._check_website(l)
 
 if __name__ == "__main__":
     go = CWebCrawler()

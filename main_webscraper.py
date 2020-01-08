@@ -92,9 +92,13 @@ class CWebCrawler(object):
                             if len(game_webpage.getClasses("no-arrow in-play")) > 0:
                                 message.logDebug("Game is in play, skipping.")
                                 continue
+                        try:
+                            market_tags = game_webpage.getClasses("market-dd select-wrap")[0].getClasses(
+                                "select-item beta-callout")
+                        except:
+                            message.logWarning("Unable to load market tags, skipping to next match")
+                            continue
 
-                        market_tags = game_webpage.getClasses("market-dd select-wrap")[0].getClasses(
-                            "select-item beta-callout")
                         market_tags = [m for m in market_tags if m.getName() not in DISALLOWED_MARKETS]
                         market_tags.reverse()
                         for market_tag in market_tags:

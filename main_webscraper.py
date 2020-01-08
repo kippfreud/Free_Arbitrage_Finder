@@ -115,7 +115,7 @@ class CWebCrawler(object):
     # public methods
     # ------------------------------------------------------------------
 
-    def _check_website(self, website, supress=False):
+    def _check_website(self, website, supress=False, verify=False):
         """
         Checks one website for arb opps.
         """
@@ -170,17 +170,19 @@ class CWebCrawler(object):
                         "Arbitrage Opportunity": str(round(float(arb_opp), 2)),
                         "Link": website.getURL(),
                         "Instructions": instructions},
-                        supress=supress
+                        supress=supress,
+                        verify=verify
                     )
                     return True
         return False
 
-    def _processResult(self, result, supress=False):
+    def _processResult(self, result, supress=False, verify=False):
         """
         Is run when a result is found.
         """
         self.all_results.append(result)
-        self._check_results()
+        if verify:
+            self._check_results()
         name = result["Name"].split(":")
         if not supress:
             message.logResult("#------------------------------------------------------------------")
@@ -199,14 +201,13 @@ class CWebCrawler(object):
 
         # then beep
         if not supress:
-            ut.beep()
-
+            ut.beep('templates/ding.wav')
 
     def _check_results(self):
         links = [r["Link"] for r in self.all_results]
         self.all_results = []
         for l in links:
-            self._check_website(l)
+            self._check_website(l, verify=True)
 
 if __name__ == "__main__":
     go = CWebCrawler()

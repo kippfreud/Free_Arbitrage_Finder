@@ -62,7 +62,7 @@ class CTag():
         Returns all the children of this class as CTag instances.
         '''
         ret = list(self.m_tag.children)
-        return [ CTag(r) for r in ret ]
+        return [ CTag(r) for r in ret if isinstance(r, Tag)]
     
     def getClasses(self, class_names):
         '''
